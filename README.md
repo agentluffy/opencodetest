@@ -9,7 +9,10 @@
 
 ### Building
 
-However you like
+bun works
+docker works
+**install file broken**
+**conflicts with opencode** 
 
 ### Documentation
  (https://opencode.ai/docs).
