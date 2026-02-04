@@ -27,3 +27,14 @@ target
 opencode-dev
 logs/
 *.bun-build
+
+# Personal testing files - do not commit
+docker-test/
+Dockerfile
+docker-compose.yml
+test_security_removed.sh
+run-test.sh
+
+# Personal OpenCode project data
+.opencode/
+
