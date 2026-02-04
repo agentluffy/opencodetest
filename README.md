@@ -10,8 +10,11 @@
 ### Building
 
 bun works
+
 docker works
+
 **install file broken**
+
 **conflicts with opencode** 
 
 ### Documentation
