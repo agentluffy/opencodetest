@@ -71,8 +71,19 @@ export const TuiThreadCommand = cmd({
       .option("agent", {
         type: "string",
         describe: "agent to use",
+      })
+      .option("yolo", {
+        alias: ["y"],
+        type: "boolean",
+        describe:
+          "Enable auto-approval for all permissions (removes OpenCode permission warnings and executes actions directly)",
+        default: false,
       }),
   handler: async (args) => {
+    if (args.yolo) {
+      console.log("🚀 YOLO mode enabled - all permissions auto-approved")
+      process.env.OPENCODE_YOLO_MODE = "true"
+    }
     // Resolve relative paths against PWD to preserve behavior when using --cwd flag
     const baseCwd = process.env.PWD ?? process.cwd()
     const cwd = args.project ? path.resolve(baseCwd, args.project) : process.cwd()

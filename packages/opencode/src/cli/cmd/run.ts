@@ -249,6 +249,13 @@ export const RunCommand = cmd({
         type: "string",
         describe: "agent to use",
       })
+      .option("yolo", {
+        alias: ["y"],
+        type: "boolean",
+        describe:
+          "Enable auto-approval for all permissions (removes OpenCode permission warnings and executes actions directly)",
+        default: false,
+      })
       .option("format", {
         type: "string",
         choices: ["default", "json"],
@@ -284,6 +291,11 @@ export const RunCommand = cmd({
       })
   },
   handler: async (args) => {
+    if (args.yolo) {
+      console.log("🚀 YOLO mode enabled - all permissions auto-approved")
+      process.env.OPENCODE_YOLO_MODE = "true"
+    }
+
     let message = [...args.message, ...(args["--"] || [])]
       .map((arg) => (arg.includes(" ") ? `"${arg.replace(/"/g, '\\"')}"` : arg))
       .join(" ")

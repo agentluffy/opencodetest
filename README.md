@@ -1,5 +1,3 @@
-
-
 ---
 ## Security Notice
 
@@ -15,7 +13,22 @@ docker works
 
 **install file broken**
 
-**conflicts with opencode** 
+**conflicts with opencode**
+
+### YOLO Mode
+
+For automated workflows, use the `--yolo` flag to auto-approve all permissions (dangerous commands like `rm -rf /` are still blocked):
+
+```bash
+opencode run --yolo "your command here"
+```
+
+Or with the TUI:
+
+```bash
+opencode --yolo
+```
 
 ### Documentation
- (https://opencode.ai/docs).
+
+(https://opencode.ai/docs).

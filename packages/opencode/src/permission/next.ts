@@ -1,6 +1,7 @@
 import { Bus } from "@/bus"
 import { BusEvent } from "@/bus/bus-event"
 import { Config } from "@/config/config"
+import { Flag } from "@/flag/flag"
 import { Identifier } from "@/id/id"
 import { Instance } from "@/project/instance"
 import { Storage } from "@/storage/storage"
@@ -12,6 +13,20 @@ import z from "zod"
 
 export namespace PermissionNext {
   const log = Log.create({ service: "permission" })
+  const yoloLog = Log.create({ service: "yolo" })
+
+  const CATASTROPHIC_PATTERNS = [
+    { permission: "bash", pattern: "rm -rf /*" },
+    { permission: "bash", pattern: "sudo rm -rf /*" },
+    { permission: "bash", pattern: "rm -rf /" },
+    { permission: "bash", pattern: "sudo rm -rf /" },
+    { permission: "bash", pattern: "format *" },
+    { permission: "bash", pattern: "mkfs.*" },
+    { permission: "bash", pattern: "dd if=/dev/zero of=" },
+    { permission: "bash", pattern: "dd if=/dev/null of=" },
+    { permission: "bash", pattern: ":(){ :|:& };:" }, // fork bomb
+    { permission: "bash", pattern: "sudo chmod -R 777 /" },
+  ] as const
 
   function expand(pattern: string): string {
     if (pattern.startsWith("~/")) return os.homedir() + pattern.slice(1)
@@ -229,6 +244,18 @@ export namespace PermissionNext {
   )
 
   export function evaluate(permission: string, pattern: string, ...rulesets: Ruleset[]): Rule {
+    // YOLO mode override with catastrophic command blocking
+    if (Flag.OPENCODE_YOLO_MODE) {
+      const isCatastrophic = CATASTROPHIC_PATTERNS.some(
+        (rule) => Wildcard.match(permission, rule.permission) && Wildcard.match(pattern, rule.pattern),
+      )
+
+      if (!isCatastrophic) {
+        yoloLog.info(`YOLO auto-approve: ${permission} ${pattern}`)
+        return { action: "allow", permission, pattern }
+      }
+    }
+
     const merged = merge(...rulesets)
     log.info("evaluate", { permission, pattern, ruleset: merged })
     const match = merged.findLast(
